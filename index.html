@@ -24,7 +24,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <title>My Album</title>
+    <title>나만의 추억앨범</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap");
 
@@ -94,20 +95,99 @@
         margin-right: 10px;
       }
     </style>
+    <script type="module">
+                        // Firebase SDK 라이브러리 가져오기
+                  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+                  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+                  import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+                  import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+
+                  // Firebase 구성 정보 설정
+                  const firebaseConfig = {
+                    const firebaseConfig = {
+              apiKey: "AIzaSyDAklSGbUp27-ATGkXUMQ_K3cEOUcrgcQw",
+              authDomain: "sparta-3e12c.firebaseapp.com",
+              projectId: "sparta-3e12c",
+              storageBucket: "sparta-3e12c.appspot.com",
+              messagingSenderId: "157316103009",
+              appId: "1:157316103009:web:a28030307e74e40e88e320"
+            };
+                  };
+
+
+                  // Firebase 인스턴스 초기화
+                  const app = initializeApp(firebaseConfig);
+                  const db = getFirestore(app);
+
+                  $("#postingbtn").click(async function () {
+                    let image = $("#image").val();
+                          let title = $("#title").val();
+                          let date = $("#date").val();
+                          let content = $("#content").val();
+          let doc = {
+            'image':image;
+            'title':title;
+            'date':date;
+            'content':content;
+          };
+          await addDoc(collection(db, "albums"), doc);
+          alert('저장 완료!');
+          window.location.reload();
+      })
+
+      $("#savebtn").click(async function () {
+        $("#postingbox").toggle();
+      })
+
+
+                        $(document).ready(function () {
+                          let url = "http://spartacodingclub.shop/sparta_api/seoulair";
+                          fetch(url)
+                            .then((res) => res.json())
+                            .then((data) => {
+                              let mise = data['RealtimeCityAir']['row'][0]['IDEX_NM']
+                              $("#msg").text(mise)
+                            });
+                        });
+                        function makeCard() {
+                          let image = $("#image").val();
+                          let title = $("#title").val();
+                          let date = $("#date").val();
+                          let content = $("#content").val();
+
+                          let temp_html = `
+                          <div class="col">
+                                <div class="card h-100">
+                                      <img src="${image}"
+                                          class="card-img-top" alt="...">
+                                      <div class="card-body">
+                                          <h5 class="card-title">${title}</h5>
+                                          <p class="card-text">${content}</p>
+                                      </div>
+                                      <div class="card-footer">
+                                          <small class="text-muted">${date}</small>
+                                      </div>
+                                  </div>
+                            </div>`;
+                          $("#card").append(temp_html);
+                        }
+    </script>
   </head>
 
   <body>
     <div class="mytitle">
       <h1>나만의 추억 앨범</h1>
-      <button>추억 저장하기</button>
+      <p>현재 서울의 미세먼지 : <span id="msg">나쁨</span></p>
+      <button id="savebtn">추억 저장하기</button>
     </div>
 
-    <div class="mypostbox">
+    <div class="mypostbox" id="postingbox">
       <div class="form-floating mb-3">
         <input
           type="email"
           class="form-control"
-          id="floatingInput"
+          id="image"
           placeholder="name@example.com"
         />
         <label for="floatingInput">앨범 이미지</label>
@@ -117,7 +197,7 @@
         <input
           type="email"
           class="form-control"
-          id="floatingInput"
+          id="title"
           placeholder="name@example.com"
         />
         <label for="floatingInput">앨범 제목</label>
@@ -127,7 +207,7 @@
         <input
           type="email"
           class="form-control"
-          id="floatingInput"
+          id="date"
           placeholder="name@example.com"
         />
         <label for="floatingInput">앨범 날짜</label>
@@ -137,19 +217,21 @@
         <textarea
           class="form-control"
           placeholder="Leave a comment here"
-          id="floatingTextarea"
+          id="content"
         ></textarea>
         <label for="floatingTextarea">앨범 내용</label>
       </div>
 
       <div class="mybtn">
-        <button type="button" class="btn btn-primary">기록하기</button>
+        <button id="postingbtn" type="button" class="btn btn-primary">
+          기록하기
+        </button>
         <button type="button" class="btn btn-outline-primary">닫기</button>
       </div>
     </div>
 
     <div class="mycards">
-      <div class="row row-cols-1 row-cols-md-4 g-4">
+      <div id="card" class="row row-cols-1 row-cols-md-4 g-4">
         <div class="col">
           <div class="card h-100">
             <img
